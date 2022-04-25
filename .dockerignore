@@ -1,0 +1,10 @@
+Dockerfile
+.dockerignore
+node_modules/
+hasura/
+npm-debug.log
+README.md
+.next
+.env
+docker-compose*
+nginx/

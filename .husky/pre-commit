@@ -1,0 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+npx lint-staged
+# Commented out as we do not use typescript, and it is causing issues with committing
+# npm run type-check

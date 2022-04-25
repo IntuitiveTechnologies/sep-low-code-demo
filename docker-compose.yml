@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:14
+    ports:
+    - "3003:5432"
+    restart: on-failure
+    networks:
+      - artemtech
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: password
+      POSTGRES_DB: postgres
+    volumes:
+      - ./db/fixtures/entry:/docker-entrypoint-initdb.d
+      - ./output:/output
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  admin:
+    image: motoradmin/motoradmin:0.2.56
+    environment:
+      SECRET_KEY_BASE: egr6j5MOr8QsOv2qbYisa1lrH4H1Ak4zedXIc52CCsYq6bBTlnqCtWb5q31xku7Q
+      DATABASE_URL: postgres://postgres:postgres@db:5432/motoradmin
+    networks:
+      - artemtech
+    depends_on:
+      - db
+    volumes:
+      - './admin:/app'
+    ports:
+      - 3005:3000
+    restart: on-failure
+networks:
+  artemtech:
+    driver: bridge
