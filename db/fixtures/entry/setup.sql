@@ -33,33 +33,9 @@ $$
   END;
 $$;
 
-CREATE TABLE public.demo (
-    id uuid NOT NULL DEFAULT gen_random_uuid(),
-    title character varying(100) NOT NULL,
-    description character varying,
-    created_at timestamp with time zone NOT NULL DEFAULT now(),
-    updated_at timestamp with time zone NOT NULL DEFAULT now(),
-    CONSTRAINT demo_pkey PRIMARY KEY (id),
-    UNIQUE(title),
-    CONSTRAINT only_chars_and_numbers_in_key CHECK(title ~ '^[a-zA-Z0-9_\-]{2,}$')
-);
-
-CREATE TRIGGER clean_keys
-               BEFORE INSERT
-               ON public.demo
-               FOR EACH ROW
-               EXECUTE FUNCTION public.clean_keys();
-
-DROP TRIGGER IF EXISTS set_public_demo_updated_at ON public.demo;
-
-CREATE TRIGGER set_public_demo_updated_at BEFORE
-UPDATE
-  ON public.demo FOR EACH ROW EXECUTE FUNCTION public.set_current_timestamp_updated_at();
-
 ---
 --- DATABASE DUMP FROM 13-04-2022
 ---
-INSERT INTO public.demo (title, description) VALUES ('Title_1', 'Description 1');
 
 CREATE TABLE public.book (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -171,6 +147,8 @@ INSERT INTO public.library_book (library_id, book_id) VALUES
 
 INSERT INTO public.library_cardholder (library_id, cardholder_id) VALUES
 ('508b3d68-8b55-490d-9c09-c73a7d06ce08', '14b2bbb1-3a86-4521-8722-56b0e8410af0'),
+('36f57792-369d-43f9-a81f-6a5dde83fffa', '14b2bbb1-3a86-4521-8722-56b0e8410af0'),
+('7a522c64-cd37-4457-acba-cebd00fc1b60', '14b2bbb1-3a86-4521-8722-56b0e8410af0'),
 ('36f57792-369d-43f9-a81f-6a5dde83fffa', '3a1ab178-9acd-449b-9bef-a729bebd8205'),
 ('36f57792-369d-43f9-a81f-6a5dde83fffa', '3d2851a6-220b-49f8-8742-d7c8ced44279'),
 ('7a522c64-cd37-4457-acba-cebd00fc1b60', '6d6f059e-c879-48a5-bd02-2ef090069469');

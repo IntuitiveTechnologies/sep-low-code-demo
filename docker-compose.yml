@@ -19,6 +19,29 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  graphql-engine:
+    image: hasura/graphql-engine:v2.3.1.cli-migrations-v2
+    volumes: # used for initial setup
+      - "./hasura/metadata/:/hasura-metadata/"
+      - "./hasura/migrations/:/hasura-migrations/"
+    ports:
+      - "8082:8080"
+    depends_on:
+      - "db"
+    networks:
+      - artemtech
+    restart: on-failure
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgres@db/app
+      HASURA_GRAPHQL_ADMIN_SECRET: J8qnFrYX84lf0eAzbyTE6LN6
+      HASURA_GRAPHQL_ENABLE_TELEMETRY: "false"
+      ## enable the console served by server
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
+      ## enable debugging mode. It is recommended to disable this in production
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_JWT_SECRET: '{"type":"HS256","key":"_FNSZBHMNrDIOQWFxwg-jzgdlb4aKUZ9g18COh4OsUo"}'
   admin:
     image: motoradmin/motoradmin:0.2.56
     environment:

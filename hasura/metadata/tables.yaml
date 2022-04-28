@@ -1,0 +1,276 @@
+- table:
+    schema: public
+    name: book
+  array_relationships:
+    - name: book_on_loans
+      using:
+        foreign_key_constraint_on:
+          column: book_id
+          table:
+            schema: public
+            name: book_on_loan
+    - name: library_books
+      using:
+        foreign_key_constraint_on:
+          column: book_id
+          table:
+            schema: public
+            name: library_book
+  insert_permissions:
+    - role: superadmin
+      permission:
+        check: {}
+        columns:
+          - author
+          - created_at
+          - id
+          - title
+          - updated_at
+        backend_only: false
+  select_permissions:
+    - role: superadmin
+      permission:
+        columns:
+          - author
+          - created_at
+          - id
+          - title
+          - updated_at
+        filter: {}
+  update_permissions:
+    - role: superadmin
+      permission:
+        columns:
+          - author
+          - created_at
+          - id
+          - title
+          - updated_at
+        filter: {}
+        check: {}
+  delete_permissions:
+    - role: superadmin
+      permission:
+        filter: {}
+- table:
+    schema: public
+    name: book_on_loan
+  object_relationships:
+    - name: book
+      using:
+        foreign_key_constraint_on: book_id
+    - name: cardholder
+      using:
+        foreign_key_constraint_on: cardholder_id
+  insert_permissions:
+    - role: superadmin
+      permission:
+        check: {}
+        columns:
+          - book_id
+          - cardholder_id
+          - return_deadline
+        backend_only: false
+  select_permissions:
+    - role: superadmin
+      permission:
+        columns:
+          - book_id
+          - cardholder_id
+          - return_deadline
+        filter: {}
+  update_permissions:
+    - role: superadmin
+      permission:
+        columns:
+          - book_id
+          - cardholder_id
+          - return_deadline
+        filter: {}
+        check: {}
+  delete_permissions:
+    - role: superadmin
+      permission:
+        filter: {}
+- table:
+    schema: public
+    name: cardholder
+  array_relationships:
+    - name: book_on_loans
+      using:
+        foreign_key_constraint_on:
+          column: cardholder_id
+          table:
+            schema: public
+            name: book_on_loan
+    - name: library_cardholders
+      using:
+        foreign_key_constraint_on:
+          column: cardholder_id
+          table:
+            schema: public
+            name: library_cardholder
+  insert_permissions:
+    - role: superadmin
+      permission:
+        check: {}
+        columns:
+          - address
+          - name
+          - created_at
+          - updated_at
+          - id
+        backend_only: false
+  select_permissions:
+    - role: superadmin
+      permission:
+        columns:
+          - address
+          - name
+          - created_at
+          - updated_at
+          - id
+        filter: {}
+  update_permissions:
+    - role: superadmin
+      permission:
+        columns:
+          - address
+          - name
+          - created_at
+          - updated_at
+          - id
+        filter: {}
+        check: {}
+  delete_permissions:
+    - role: superadmin
+      permission:
+        filter: {}
+- table:
+    schema: public
+    name: library
+  array_relationships:
+    - name: library_books
+      using:
+        foreign_key_constraint_on:
+          column: library_id
+          table:
+            schema: public
+            name: library_book
+    - name: library_cardholders
+      using:
+        foreign_key_constraint_on:
+          column: library_id
+          table:
+            schema: public
+            name: library_cardholder
+  insert_permissions:
+    - role: superadmin
+      permission:
+        check: {}
+        columns:
+          - address
+          - name
+          - created_at
+          - updated_at
+          - id
+        backend_only: false
+  select_permissions:
+    - role: superadmin
+      permission:
+        columns:
+          - address
+          - name
+          - created_at
+          - updated_at
+          - id
+        filter: {}
+  update_permissions:
+    - role: superadmin
+      permission:
+        columns:
+          - address
+          - name
+          - created_at
+          - updated_at
+          - id
+        filter: {}
+        check: {}
+  delete_permissions:
+    - role: superadmin
+      permission:
+        filter: {}
+- table:
+    schema: public
+    name: library_book
+  object_relationships:
+    - name: book
+      using:
+        foreign_key_constraint_on: book_id
+    - name: library
+      using:
+        foreign_key_constraint_on: library_id
+  insert_permissions:
+    - role: superadmin
+      permission:
+        check: {}
+        columns:
+          - book_id
+          - library_id
+        backend_only: false
+  select_permissions:
+    - role: superadmin
+      permission:
+        columns:
+          - book_id
+          - library_id
+        filter: {}
+  update_permissions:
+    - role: superadmin
+      permission:
+        columns:
+          - book_id
+          - library_id
+        filter: {}
+        check: {}
+  delete_permissions:
+    - role: superadmin
+      permission:
+        filter: {}
+- table:
+    schema: public
+    name: library_cardholder
+  object_relationships:
+    - name: cardholder
+      using:
+        foreign_key_constraint_on: cardholder_id
+    - name: library
+      using:
+        foreign_key_constraint_on: library_id
+  insert_permissions:
+    - role: superadmin
+      permission:
+        check: {}
+        columns:
+          - cardholder_id
+          - library_id
+        backend_only: false
+  select_permissions:
+    - role: superadmin
+      permission:
+        columns:
+          - cardholder_id
+          - library_id
+        filter: {}
+  update_permissions:
+    - role: superadmin
+      permission:
+        columns:
+          - cardholder_id
+          - library_id
+        filter: {}
+        check: {}
+  delete_permissions:
+    - role: superadmin
+      permission:
+        filter: {}

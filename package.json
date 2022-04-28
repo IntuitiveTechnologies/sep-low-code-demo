@@ -5,9 +5,9 @@
   "scripts": {
     "format": "prettier --write .",
     "type-check": "tsc",
-    "prepare": "husky install"
-  },
-  "dependencies": {
+    "prepare": "husky install",
+    "hasura": "hasura --project hasura --skip-update-check",
+    "hasura:console": "npm run hasura console"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.28.2",
@@ -17,6 +17,7 @@
     "eslint": "7.30.0",
     "eslint-config-next": "11.0.1",
     "eslint-config-prettier": "^8.3.0",
+    "hasura-cli": "^2.5.0",
     "husky": "^7.0.2",
     "jest": "^27.0.6",
     "lint-staged": "^11.0.0",
