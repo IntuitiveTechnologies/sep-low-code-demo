@@ -716,7 +716,17 @@
   insert_permissions:
   - role: agency_admin
     permission:
-      check: {}
+      check:
+        _exists:
+          _where:
+            _and:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - agency_role:
+                _eq: agency_admin
+          _table:
+            schema: public
+            name: agency_user
       columns:
       - name
       - address
@@ -750,12 +760,18 @@
       - updated_at
       - id
       filter:
-        library_user_role:
-          library:
-            agency:
-              agency_users:
-                user_id:
-                  _eq: X-Hasura-User-Id
+        agency_users:
+          agency:
+            _exists:
+              _where:
+                _and:
+                - user_id:
+                    _eq: X-Hasura-User-Id
+                - agency_role:
+                    _eq: agency_admin
+              _table:
+                schema: public
+                name: agency_user
       allow_aggregations: true
   - role: superadmin
     permission:
@@ -781,12 +797,18 @@
       - updated_at
       - id
       filter:
-        library_user_role:
-          library:
-            agency:
-              agency_users:
-                user_id:
-                  _eq: X-Hasura-User-Id
+        agency_users:
+          agency:
+            _exists:
+              _where:
+                _and:
+                - user_id:
+                    _eq: X-Hasura-User-Id
+                - agency_role:
+                    _eq: agency_admin
+              _table:
+                schema: public
+                name: agency_user
       check: null
   - role: superadmin
     permission:
