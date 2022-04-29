@@ -106,7 +106,7 @@ CREATE TABLE agency_user (
     updated_at timestamp with time zone NOT NULL DEFAULT now(),
     CONSTRAINT user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user(id),
     CONSTRAINT agency_role_fkey FOREIGN KEY (agency_role) REFERENCES public.agency_role_enum(value),
-    CONSTRAINT sgency_id_fkey FOREIGN KEY (agency_id) REFERENCES public.agency(id),
+    CONSTRAINT agency_id_fkey FOREIGN KEY (agency_id) REFERENCES public.agency(id),
     UNIQUE(user_id, agency_id, agency_role)
 );
 
@@ -132,10 +132,12 @@ CREATE TABLE public.library_user_role (
 CREATE TABLE public.book_on_loan (
     book_id uuid NOT NULL,
     user_id uuid NOT NULL,
+    library_id uuid NOT NULL,
     return_deadline timestamp with time zone NOT NULL DEFAULT (NOW() + INTERVAL '30 DAYS'),
     CONSTRAINT book_on_loan_pkey PRIMARY KEY (book_id, user_id),
     CONSTRAINT book_id_fkey FOREIGN KEY (book_id) REFERENCES public.book(id),
-    CONSTRAINT user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user(id)
+    CONSTRAINT user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user(id),
+    CONSTRAINT library_id_fkey FOREIGN KEY (library_id) REFERENCES public.library(id)
 );
 
 /*
@@ -194,20 +196,20 @@ INSERT INTO public.user (id, name, address, email) VALUES
 ('3d2851a6-220b-49f8-8742-d7c8ced44279', 'Jan de Jong', 'Den Haag', 'j.dejong@student.uu.nl'),
 ('6d6f059e-c879-48a5-bd02-2ef191069469', 'Beth Harmon', 'Amsterdam', 'b.harmon@admin.nl');
 
-INSERT INTO public.book_on_loan (user_id, book_id) VALUES 
-('14b2bbb1-3a86-4521-8722-56b0e8410af0', '49be10d4-9dc4-4794-bd8e-e26b58a5868b'),
-('14b2bbb1-3a86-4521-8722-56b0e8410af0', '1d5d2d61-7520-480f-896d-d6fbce869ea5'),
-('14b2bbb1-3a86-4521-8722-56b0e8410af0', '85164824-f77f-43a1-839a-626a385eda72'),
-('14b2bbb1-3a86-4521-8722-56b0e8410af0', '95c166bb-b01b-41c3-9d8e-03ee894c85be'),
-('14b2bbb1-3a86-4521-8722-56b0e8410af0', 'b2a03bd1-0298-4d43-8899-cc67fd4e6c92'),
-('3a1ab178-9acd-449b-9bef-a729bebd8205', '49be10d4-9dc4-4794-bd8e-e26b58a5868b'),
-('3a1ab178-9acd-449b-9bef-a729bebd8205', '85164824-f77f-43a1-839a-626a385eda72'),
-('6d6f059e-c879-48a5-bd02-2ef090069469', '1d5d2d61-7520-480f-896d-d6fbce869ea5'),
-('6d6f059e-c879-48a5-bd02-2ef090069469', '95c166bb-b01b-41c3-9d8e-03ee894c85be'),
-('6d6f059e-c879-48a5-bd02-2ef090069469', 'b2a03bd1-0298-4d43-8899-cc67fd4e6c92'), 
-('3d2851a6-220b-49f8-8742-d7c8ced44279', '49be10d4-9dc4-4794-bd8e-e26b58a5868b'),
-('3d2851a6-220b-49f8-8742-d7c8ced44279', '95c166bb-b01b-41c3-9d8e-03ee894c85be'),
-('3d2851a6-220b-49f8-8742-d7c8ced44279', '85164824-f77f-43a1-839a-626a385eda72');
+INSERT INTO public.book_on_loan (user_id, book_id, library_id) VALUES 
+('14b2bbb1-3a86-4521-8722-56b0e8410af0', '49be10d4-9dc4-4794-bd8e-e26b58a5868b', '508b3d68-8b55-490d-9c09-c73a7d06ce08'),
+('14b2bbb1-3a86-4521-8722-56b0e8410af0', '1d5d2d61-7520-480f-896d-d6fbce869ea5', '508b3d68-8b55-490d-9c09-c73a7d06ce08'),
+('14b2bbb1-3a86-4521-8722-56b0e8410af0', '85164824-f77f-43a1-839a-626a385eda72', '508b3d68-8b55-490d-9c09-c73a7d06ce08'),
+('14b2bbb1-3a86-4521-8722-56b0e8410af0', '95c166bb-b01b-41c3-9d8e-03ee894c85be', '508b3d68-8b55-490d-9c09-c73a7d06ce08'),
+('14b2bbb1-3a86-4521-8722-56b0e8410af0', 'b2a03bd1-0298-4d43-8899-cc67fd4e6c92', '508b3d68-8b55-490d-9c09-c73a7d06ce08'),
+('3a1ab178-9acd-449b-9bef-a729bebd8205', '49be10d4-9dc4-4794-bd8e-e26b58a5868b', '36f57792-369d-43f9-a81f-6a5dde83fffa'),
+('3a1ab178-9acd-449b-9bef-a729bebd8205', '85164824-f77f-43a1-839a-626a385eda72', '36f57792-369d-43f9-a81f-6a5dde83fffa'),
+('6d6f059e-c879-48a5-bd02-2ef090069469', '1d5d2d61-7520-480f-896d-d6fbce869ea5', '7a522c64-cd37-4457-acba-cebd00fc1b60'),
+('6d6f059e-c879-48a5-bd02-2ef090069469', '95c166bb-b01b-41c3-9d8e-03ee894c85be', '7a522c64-cd37-4457-acba-cebd00fc1b60'),
+('6d6f059e-c879-48a5-bd02-2ef090069469', 'b2a03bd1-0298-4d43-8899-cc67fd4e6c92', '7a522c64-cd37-4457-acba-cebd00fc1b60'), 
+('3d2851a6-220b-49f8-8742-d7c8ced44279', '49be10d4-9dc4-4794-bd8e-e26b58a5868b', '36f57792-369d-43f9-a81f-6a5dde83fffa'),
+('3d2851a6-220b-49f8-8742-d7c8ced44279', '95c166bb-b01b-41c3-9d8e-03ee894c85be', '36f57792-369d-43f9-a81f-6a5dde83fffa'),
+('3d2851a6-220b-49f8-8742-d7c8ced44279', '85164824-f77f-43a1-839a-626a385eda72', '36f57792-369d-43f9-a81f-6a5dde83fffa');
 
 INSERT INTO public.library_book (library_id, book_id) VALUES
 ('508b3d68-8b55-490d-9c09-c73a7d06ce08', '49be10d4-9dc4-4794-bd8e-e26b58a5868b'),

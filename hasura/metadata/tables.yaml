@@ -1,8 +1,5 @@
 - table:
     schema: public
-    name: acl_library
-- table:
-    schema: public
     name: agency
   array_relationships:
   - name: agency_users
@@ -19,6 +16,76 @@
         table:
           schema: public
           name: library
+  insert_permissions:
+  - role: superadmin
+    permission:
+      check: {}
+      columns:
+      - id
+      - name
+      - comment
+      - created_at
+      - updated_at
+      backend_only: false
+  select_permissions:
+  - role: agency_admin
+    permission:
+      columns:
+      - comment
+      - name
+      - created_at
+      - updated_at
+      - id
+      filter:
+        agency_users:
+          user_id:
+            _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  - role: superadmin
+    permission:
+      columns:
+      - comment
+      - name
+      - created_at
+      - updated_at
+      - id
+      filter: {}
+      allow_aggregations: true
+  update_permissions:
+  - role: agency_admin
+    permission:
+      columns:
+      - comment
+      - name
+      - updated_at
+      filter:
+        agency_users:
+          user_id:
+            _eq: X-Hasura-User-Id
+      check:
+        agency_users:
+          user_id:
+            _eq: X-Hasura-User-Id
+  - role: superadmin
+    permission:
+      columns:
+      - comment
+      - name
+      - created_at
+      - updated_at
+      - id
+      filter: {}
+      check: null
+  delete_permissions:
+  - role: agency_admin
+    permission:
+      filter:
+        agency_users:
+          user_id:
+            _eq: X-Hasura-User-Id
+  - role: superadmin
+    permission:
+      filter: {}
 - table:
     schema: public
     name: agency_role_enum
@@ -51,6 +118,60 @@
   - name: user
     using:
       foreign_key_constraint_on: user_id
+  insert_permissions:
+  - role: superadmin
+    permission:
+      check: {}
+      columns:
+      - agency_role
+      - created_at
+      - updated_at
+      - agency_id
+      - id
+      - user_id
+      backend_only: false
+  select_permissions:
+  - role: agency_admin
+    permission:
+      columns:
+      - agency_role
+      - created_at
+      - updated_at
+      - agency_id
+      - id
+      - user_id
+      filter:
+        agency:
+          agency_users:
+            user_id:
+              _eq: X-Hasura-User-Id
+  - role: superadmin
+    permission:
+      columns:
+      - agency_role
+      - created_at
+      - updated_at
+      - agency_id
+      - id
+      - user_id
+      filter: {}
+      allow_aggregations: true
+  update_permissions:
+  - role: superadmin
+    permission:
+      columns:
+      - agency_role
+      - created_at
+      - updated_at
+      - agency_id
+      - id
+      - user_id
+      filter: {}
+      check: null
+  delete_permissions:
+  - role: superadmin
+    permission:
+      filter: {}
 - table:
     schema: public
     name: book
@@ -70,6 +191,16 @@
           schema: public
           name: library_book
   insert_permissions:
+  - role: agency_admin
+    permission:
+      check: {}
+      columns:
+      - author
+      - created_at
+      - id
+      - title
+      - updated_at
+      backend_only: false
   - role: superadmin
     permission:
       check: {}
@@ -81,6 +212,22 @@
       - updated_at
       backend_only: false
   select_permissions:
+  - role: agency_admin
+    permission:
+      columns:
+      - author
+      - created_at
+      - id
+      - title
+      - updated_at
+      filter: {}
+  - role: cardholder
+    permission:
+      columns:
+      - author
+      - id
+      - title
+      filter: {}
   - role: superadmin
     permission:
       columns:
@@ -112,36 +259,99 @@
   - name: book
     using:
       foreign_key_constraint_on: book_id
+  - name: library
+    using:
+      foreign_key_constraint_on: library_id
   - name: user
     using:
       foreign_key_constraint_on: user_id
   insert_permissions:
+  - role: agency_admin
+    permission:
+      check:
+        library:
+          agency:
+            agency_users:
+              user_id:
+                _eq: X-Hasura-User-Id
+      columns:
+      - return_deadline
+      - book_id
+      - library_id
+      - user_id
+      backend_only: false
   - role: superadmin
     permission:
       check: {}
       columns:
-      - book_id
-      - user_id
       - return_deadline
+      - book_id
+      - library_id
+      - user_id
       backend_only: false
   select_permissions:
+  - role: agency_admin
+    permission:
+      columns:
+      - return_deadline
+      - book_id
+      - library_id
+      - user_id
+      filter:
+        library:
+          agency:
+            agency_users:
+              user_id:
+                _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  - role: cardholder
+    permission:
+      columns:
+      - return_deadline
+      - book_id
+      - library_id
+      - user_id
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
   - role: superadmin
     permission:
       columns:
-      - book_id
-      - user_id
       - return_deadline
+      - book_id
+      - library_id
+      - user_id
       filter: {}
   update_permissions:
+  - role: agency_admin
+    permission:
+      columns:
+      - return_deadline
+      filter:
+        library:
+          agency:
+            agency_users:
+              user_id:
+                _eq: X-Hasura-User-Id
+      check: null
   - role: superadmin
     permission:
       columns:
-      - book_id
-      - user_id
       - return_deadline
+      - book_id
+      - library_id
+      - user_id
       filter: {}
       check: {}
   delete_permissions:
+  - role: agency_admin
+    permission:
+      filter:
+        library:
+          agency:
+            agency_users:
+              user_id:
+                _eq: X-Hasura-User-Id
   - role: superadmin
     permission:
       filter: {}
@@ -153,6 +363,13 @@
     using:
       foreign_key_constraint_on: agency_id
   array_relationships:
+  - name: book_on_loans
+    using:
+      foreign_key_constraint_on:
+        column: library_id
+        table:
+          schema: public
+          name: book_on_loan
   - name: library_books
     using:
       foreign_key_constraint_on:
@@ -168,38 +385,104 @@
           schema: public
           name: library_user_role
   insert_permissions:
+  - role: agency_admin
+    permission:
+      check:
+        agency:
+          agency_users:
+            user_id:
+              _eq: X-Hasura-User-Id
+      columns:
+      - address
+      - name
+      - created_at
+      - updated_at
+      - agency_id
+      - id
+      backend_only: false
   - role: superadmin
     permission:
       check: {}
       columns:
       - address
-      - name
+      - agency_id
       - created_at
-      - updated_at
       - id
+      - name
+      - updated_at
       backend_only: false
   select_permissions:
-  - role: superadmin
+  - role: agency_admin
     permission:
       columns:
       - address
       - name
       - created_at
       - updated_at
+      - agency_id
       - id
+      filter:
+        agency:
+          agency_users:
+            user_id:
+              _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  - role: cardholder
+    permission:
+      columns:
+      - address
+      - id
+      - name
+      filter:
+        library_user_role:
+          user_id:
+            _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  - role: superadmin
+    permission:
+      columns:
+      - address
+      - agency_id
+      - created_at
+      - id
+      - name
+      - updated_at
       filter: {}
   update_permissions:
-  - role: superadmin
+  - role: agency_admin
     permission:
       columns:
       - address
       - name
       - created_at
       - updated_at
+      - agency_id
       - id
+      filter:
+        agency:
+          agency_users:
+            user_id:
+              _eq: X-Hasura-User-Id
+      check: null
+  - role: superadmin
+    permission:
+      columns:
+      - address
+      - agency_id
+      - created_at
+      - id
+      - name
+      - updated_at
       filter: {}
       check: {}
   delete_permissions:
+  - role: agency_admin
+    permission:
+      filter:
+        agency:
+          agency_users:
+            user_id:
+              _eq: X-Hasura-User-Id
   - role: superadmin
     permission:
       filter: {}
@@ -214,6 +497,18 @@
     using:
       foreign_key_constraint_on: library_id
   insert_permissions:
+  - role: agency_admin
+    permission:
+      check:
+        library:
+          agency:
+            agency_users:
+              user_id:
+                _eq: X-Hasura-User-Id
+      columns:
+      - book_id
+      - library_id
+      backend_only: false
   - role: superadmin
     permission:
       check: {}
@@ -222,6 +517,26 @@
       - library_id
       backend_only: false
   select_permissions:
+  - role: agency_admin
+    permission:
+      columns: []
+      filter:
+        library:
+          agency:
+            agency_users:
+              user_id:
+                _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  - role: cardholder
+    permission:
+      columns:
+      - book_id
+      - library_id
+      filter:
+        library:
+          library_user_role:
+            user_id:
+              _eq: X-Hasura-User-Id
   - role: superadmin
     permission:
       columns:
@@ -229,6 +544,18 @@
       - library_id
       filter: {}
   update_permissions:
+  - role: agency_admin
+    permission:
+      columns:
+      - book_id
+      - library_id
+      filter:
+        library:
+          agency:
+            agency_users:
+              user_id:
+                _eq: X-Hasura-User-Id
+      check: null
   - role: superadmin
     permission:
       columns:
@@ -237,6 +564,14 @@
       filter: {}
       check: {}
   delete_permissions:
+  - role: agency_admin
+    permission:
+      filter:
+        library:
+          agency:
+            agency_users:
+              user_id:
+                _eq: X-Hasura-User-Id
   - role: superadmin
     permission:
       filter: {}
@@ -254,29 +589,102 @@
     using:
       foreign_key_constraint_on: user_id
   insert_permissions:
+  - role: agency_admin
+    permission:
+      check:
+        library:
+          agency:
+            agency_users:
+              user_id:
+                _eq: X-Hasura-User-Id
+      columns:
+      - agency_role
+      - assigned_at
+      - id
+      - library_id
+      - user_id
+      backend_only: false
   - role: superadmin
     permission:
       check: {}
       columns:
-      - user_id
+      - agency_role
+      - assigned_at
+      - id
       - library_id
+      - user_id
       backend_only: false
   select_permissions:
+  - role: agency_admin
+    permission:
+      columns:
+      - agency_role
+      - assigned_at
+      - id
+      - library_id
+      - user_id
+      filter:
+        library:
+          agency:
+            agency_users:
+              user_id:
+                _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  - role: cardholder
+    permission:
+      columns:
+      - agency_role
+      - assigned_at
+      - id
+      - library_id
+      - user_id
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
   - role: superadmin
     permission:
       columns:
-      - user_id
+      - agency_role
+      - assigned_at
+      - id
       - library_id
+      - user_id
       filter: {}
   update_permissions:
+  - role: agency_admin
+    permission:
+      columns:
+      - agency_role
+      - assigned_at
+      - id
+      - library_id
+      - user_id
+      filter:
+        library:
+          agency:
+            agency_users:
+              user_id:
+                _eq: X-Hasura-User-Id
+      check: null
   - role: superadmin
     permission:
       columns:
-      - user_id
+      - agency_role
+      - assigned_at
+      - id
       - library_id
+      - user_id
       filter: {}
       check: {}
   delete_permissions:
+  - role: agency_admin
+    permission:
+      filter:
+        library:
+          agency:
+            agency_users:
+              user_id:
+                _eq: X-Hasura-User-Id
   - role: superadmin
     permission:
       filter: {}
@@ -306,32 +714,87 @@
           schema: public
           name: library_user_role
   insert_permissions:
+  - role: agency_admin
+    permission:
+      check: {}
+      columns:
+      - name
+      - address
+      - email
+      - otp_secret
+      - created_at
+      - updated_at
+      - id
+      backend_only: false
   - role: superadmin
     permission:
       check: {}
       columns:
       - address
+      - created_at
+      - email
+      - id
       - name
+      - otp_secret
+      - updated_at
+      backend_only: false
+  select_permissions:
+  - role: agency_admin
+    permission:
+      columns:
+      - name
+      - address
+      - email
+      - otp_secret
       - created_at
       - updated_at
       - id
-      backend_only: false
-  select_permissions:
+      filter:
+        library_user_role:
+          library:
+            agency:
+              agency_users:
+                user_id:
+                  _eq: X-Hasura-User-Id
+      allow_aggregations: true
   - role: superadmin
     permission:
       columns:
-      - address
       - name
+      - address
+      - email
+      - otp_secret
       - created_at
       - updated_at
       - id
       filter: {}
+      allow_aggregations: true
   update_permissions:
+  - role: agency_admin
+    permission:
+      columns:
+      - name
+      - address
+      - email
+      - otp_secret
+      - created_at
+      - updated_at
+      - id
+      filter:
+        library_user_role:
+          library:
+            agency:
+              agency_users:
+                user_id:
+                  _eq: X-Hasura-User-Id
+      check: null
   - role: superadmin
     permission:
       columns:
-      - address
       - name
+      - address
+      - email
+      - otp_secret
       - created_at
       - updated_at
       - id
